@@ -1,0 +1,723 @@
+/* ============================================================
+   style.css — Dispensador de Medicamentos Inteligente
+   Projeto Acadêmico IoT | Interface Dashboard
+   ============================================================ */
+
+/* ---- 1. VARIÁVEIS GLOBAIS (cores, sombras, bordas) ---- */
+:root {
+  --bg-page:      #f0f4f8;       /* fundo da página */
+  --bg-card:      #ffffff;       /* fundo dos cards */
+  --bg-input:     #f7f9fc;       /* fundo dos inputs */
+
+  --color-primary: #2563eb;      /* azul principal */
+  --color-primary-dark: #1d4ed8;
+  --color-primary-light: #dbeafe;
+
+  --color-teal:   #0d9488;       /* verde-azulado (ícone próximo horário) */
+  --color-purple: #7c3aed;       /* roxo (ícone última liberação) */
+  --color-amber:  #d97706;       /* âmbar (ícone total) */
+  --color-danger: #dc2626;       /* vermelho (excluir) */
+  --color-success:#16a34a;       /* verde (online/sucesso) */
+  --color-warning:#ca8a04;       /* amarelo (pendente) */
+  --color-offline:#6b7280;       /* cinza (offline) */
+
+  --text-primary: #1e293b;       /* texto principal */
+  --text-secondary:#64748b;      /* texto secundário */
+  --text-muted:   #94a3b8;       /* texto fraco */
+
+  --border:       #e2e8f0;       /* cor da borda */
+  --radius-sm:    8px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+  --radius-xl:    20px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
+  --shadow-lg: 0 10px 30px rgba(0,0,0,.10);
+
+  --transition: all .2s ease;
+}
+
+/* ---- 2. RESET E BASE ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- 3. HEADER ---- */
+.header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #0ea5e9 100%);
+  color: #fff;
+  padding: 0 24px;
+  box-shadow: 0 2px 12px rgba(37,99,235,.35);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Ícone circular no header */
+.brand-icon {
+  width: 46px;
+  height: 46px;
+  background: rgba(255,255,255,.2);
+  border: 2px solid rgba(255,255,255,.35);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  backdrop-filter: blur(4px);
+}
+
+.brand-text h1 {
+  font-size: clamp(15px, 2.2vw, 20px);
+  font-weight: 700;
+  letter-spacing: -.3px;
+}
+
+.brand-text p {
+  font-size: 12px;
+  opacity: .75;
+  font-family: 'DM Mono', monospace;
+  margin-top: 2px;
+}
+
+/* Indicador de status no header */
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.25);
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+}
+
+/* Ponto pulsante de status */
+.pulse-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #4ade80;
+  display: inline-block;
+  animation: pulse 1.8s infinite;
+}
+
+.pulse-dot.offline { background: #f87171; animation: none; }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, .6); }
+  50%       { box-shadow: 0 0 0 5px rgba(74, 222, 128, 0); }
+}
+
+/* ---- 4. LAYOUT PRINCIPAL ---- */
+.main-content {
+  flex: 1;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Layout de duas colunas (formulário + lista) */
+.two-col-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ---- 5. SEÇÕES E TÍTULOS ---- */
+.section {}
+
+/* Título de cada seção */
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.section-title i {
+  color: var(--color-primary);
+  font-size: 14px;
+}
+
+/* Linha com título + botão lado a lado */
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.section-header-row .section-title {
+  margin-bottom: 0;
+}
+
+/* Card genérico */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---- 6. GRID DE STATUS ---- */
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.status-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.status-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Ícone de cada card de status */
+.status-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Variantes de cor dos ícones */
+.icon-purple { background: #ede9fe; color: var(--color-purple); }
+.icon-teal   { background: #ccfbf1; color: var(--color-teal); }
+.icon-amber  { background: #fef3c7; color: var(--color-amber); }
+
+.status-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.status-label {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 500;
+}
+
+.status-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Badge ONLINE/OFFLINE */
+.status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 50px;
+  letter-spacing: .5px;
+  flex-shrink: 0;
+}
+
+.badge-online  { background: #dcfce7; color: #16a34a; }
+.badge-offline { background: #f1f5f9; color: var(--color-offline); }
+
+/* ---- 7. FORMULÁRIO ---- */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+/* Wrapper do input com ícone à esquerda */
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper i {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  transition: var(--transition);
+  outline: none;
+}
+
+.input-wrapper input:focus {
+  border-color: var(--color-primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.input-wrapper input::placeholder { color: var(--text-muted); }
+
+/* Feedback de erro/sucesso no formulário */
+.form-feedback {
+  font-size: 13px;
+  margin-bottom: 12px;
+  min-height: 20px;
+  padding: 0 2px;
+}
+
+.form-feedback.error   { color: var(--color-danger); }
+.form-feedback.success { color: var(--color-success); }
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* ---- 8. BOTÕES ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  flex: 1;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-dark);
+  box-shadow: 0 4px 12px rgba(37,99,235,.3);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+}
+
+.btn-ghost:hover {
+  background: var(--bg-input);
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.btn-danger:hover { background: #b91c1c; }
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 12.5px;
+}
+
+/* Botões de editar/excluir dentro dos itens da lista */
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.btn-icon:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-light); }
+.btn-icon.delete:hover { border-color: var(--color-danger); color: var(--color-danger); background: #fee2e2; }
+
+/* ---- 9. LISTA DE MEDICAMENTOS ---- */
+.med-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Item individual da lista */
+.med-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #fafbfc;
+  transition: var(--transition);
+  animation: slideIn .25s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.med-item:hover { border-color: var(--color-primary); background: #f8fbff; }
+
+/* Círculo colorido com inicial do medicamento */
+.med-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.med-info { flex: 1; min-width: 0; }
+
+.med-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.med-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 3px;
+}
+
+.med-meta span {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.med-meta i { font-size: 11px; color: var(--text-muted); }
+
+/* Badge "Ativo" */
+.badge-active {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 50px;
+  background: #dcfce7;
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
+.med-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ---- 10. ESTADO VAZIO ---- */
+.empty-state {
+  text-align: center;
+  padding: 36px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state i {
+  font-size: 36px;
+  opacity: .35;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.empty-state span {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+/* ---- 11. TABELA DE HISTÓRICO ---- */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.history-table thead {
+  background: var(--bg-input);
+}
+
+.history-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  white-space: nowrap;
+}
+
+.history-table th i { margin-right: 5px; color: var(--text-muted); }
+
+.history-table td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+/* Zebra striping suave */
+.history-table tbody tr:nth-child(even) { background: #fafbfc; }
+.history-table tbody tr:hover { background: #f1f5f9; }
+
+/* Badges de status no histórico */
+.badge-entregue {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 50px;
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.badge-pendente {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 50px;
+  background: #fef9c3;
+  color: var(--color-warning);
+}
+
+.badge-falha {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 50px;
+  background: #fee2e2;
+  color: var(--color-danger);
+}
+
+/* ---- 12. MODAL ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition);
+  padding: 20px;
+  backdrop-filter: blur(3px);
+}
+
+/* Classe adicionada pelo JS para exibir o modal */
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: #fff;
+  border-radius: var(--radius-xl);
+  padding: 32px 28px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  transform: scale(.95);
+  transition: transform .2s ease;
+}
+
+.modal-overlay.active .modal { transform: scale(1); }
+
+.modal-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: #fee2e2;
+  color: var(--color-danger);
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.modal h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.modal p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.modal-actions .btn { flex: 1; justify-content: center; }
+
+/* ---- 13. FOOTER ---- */
+.footer {
+  text-align: center;
+  padding: 18px 20px;
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+/* ---- 14. RESPONSIVIDADE MOBILE ---- */
+@media (max-width: 900px) {
+  /* Status em 2 colunas */
+  .status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  /* Layout de coluna única */
+  .two-col-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .header-inner { gap: 10px; }
+  .brand-text h1 { font-size: 14px; }
+  .brand-text p  { display: none; }
+
+  .main-content { padding: 20px 14px 32px; gap: 20px; }
+}
+
+@media (max-width: 480px) {
+  /* Status em 1 coluna no celular pequeno */
+  .status-grid { grid-template-columns: 1fr; }
+
+  .card { padding: 18px 16px; }
+
+  .header-status span:last-child { display: none; } /* esconde texto, só o ponto */
+}
+

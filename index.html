@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dispensador de Medicamentos Inteligente</title>
+
+  <!-- Fonte principal do projeto -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Ícones (Font Awesome CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Arquivo de estilos -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="header">
+    <div class="header-inner">
+      <!-- Ícone + título -->
+      <div class="header-brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-capsules"></i>
+        </div>
+        <div class="brand-text">
+          <h1>Dispensador de Medicamentos</h1>
+          <p>Sistema Inteligente de Controle — ESP32 IoT</p>
+        </div>
+      </div>
+
+      <!-- Indicador de conexão (atualizado pelo JS) -->
+      <div class="header-status">
+        <span class="pulse-dot" id="headerDot"></span>
+        <span id="headerStatusText">Conectando...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== CONTEÚDO PRINCIPAL ==================== -->
+  <main class="main-content">
+
+    <!-- -------- LINHA 1: Cards de status do sistema -------- -->
+    <section class="section">
+      <h2 class="section-title">
+        <i class="fa-solid fa-microchip"></i> Status do Sistema
+      </h2>
+      <div class="status-grid">
+
+        <!-- Card: ESP32 -->
+        <div class="status-card" id="cardEsp32">
+          <div class="status-card-icon">
+            <i class="fa-solid fa-wifi"></i>
+          </div>
+          <div class="status-card-info">
+            <span class="status-label">Dispositivo ESP32</span>
+            <span class="status-value" id="esp32Status">Online</span>
+          </div>
+          <div class="status-badge badge-online" id="esp32Badge">ONLINE</div>
+        </div>
+
+        <!-- Card: Última liberação -->
+        <div class="status-card">
+          <div class="status-card-icon icon-purple">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div class="status-card-info">
+            <span class="status-label">Última Liberação</span>
+            <span class="status-value" id="lastRelease">—</span>
+          </div>
+        </div>
+
+        <!-- Card: Próximo horário -->
+        <div class="status-card">
+          <div class="status-card-icon icon-teal">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+          <div class="status-card-info">
+            <span class="status-label">Próximo Horário</span>
+            <span class="status-value" id="nextSchedule">—</span>
+          </div>
+        </div>
+
+        <!-- Card: Total cadastrado -->
+        <div class="status-card">
+          <div class="status-card-icon icon-amber">
+            <i class="fa-solid fa-pills"></i>
+          </div>
+          <div class="status-card-info">
+            <span class="status-label">Medicamentos</span>
+            <span class="status-value" id="totalMeds">0 cadastrados</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- -------- LINHA 2: Formulário + Lista -------- -->
+    <div class="two-col-layout">
+
+      <!-- Formulário de cadastro -->
+      <section class="section card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-plus-circle"></i>
+          <span id="formTitle">Cadastrar Medicamento</span>
+        </h2>
+
+        <!-- Campos do formulário -->
+        <div class="form-group">
+          <label for="medName">Nome do Medicamento</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-prescription-bottle-medical"></i>
+            <input type="text" id="medName" placeholder="Ex: Paracetamol 500mg" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="medTime">Horário</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-clock"></i>
+            <input type="time" id="medTime" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="medDose">Quantidade / Dose</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-weight-scale"></i>
+            <input type="text" id="medDose" placeholder="Ex: 1 comprimido" />
+          </div>
+        </div>
+
+        <!-- Mensagem de erro/feedback -->
+        <div class="form-feedback" id="formFeedback"></div>
+
+        <!-- Botões do formulário -->
+        <div class="form-actions">
+          <button class="btn btn-primary" id="saveBtn" onclick="saveMedication()">
+            <i class="fa-solid fa-floppy-disk"></i> Salvar
+          </button>
+          <button class="btn btn-ghost" id="cancelBtn" onclick="cancelEdit()" style="display:none;">
+            <i class="fa-solid fa-xmark"></i> Cancelar
+          </button>
+        </div>
+      </section>
+
+      <!-- Lista de medicamentos cadastrados -->
+      <section class="section card">
+        <h2 class="section-title">
+          <i class="fa-solid fa-list-check"></i> Medicamentos Cadastrados
+        </h2>
+
+        <!-- Exibido quando não há medicamentos -->
+        <div class="empty-state" id="emptyState">
+          <i class="fa-solid fa-capsules"></i>
+          <p>Nenhum medicamento cadastrado ainda.</p>
+          <span>Use o formulário ao lado para adicionar.</span>
+        </div>
+
+        <!-- Lista dinâmica (preenchida pelo JS) -->
+        <ul class="med-list" id="medList"></ul>
+      </section>
+
+    </div>
+
+    <!-- -------- LINHA 3: Histórico -------- -->
+    <section class="section card">
+      <div class="section-header-row">
+        <h2 class="section-title">
+          <i class="fa-solid fa-table-list"></i> Histórico de Dispensações
+        </h2>
+        <!-- Botão para limpar histórico -->
+        <button class="btn btn-ghost btn-sm" onclick="clearHistory()">
+          <i class="fa-solid fa-trash-can"></i> Limpar
+        </button>
+      </div>
+
+      <!-- Mensagem quando histórico estiver vazio -->
+      <div class="empty-state" id="historyEmpty">
+        <i class="fa-regular fa-clock"></i>
+        <p>Nenhuma dispensação registrada.</p>
+      </div>
+
+      <!-- Tabela de histórico -->
+      <div class="table-wrapper" id="historyWrapper" style="display:none;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th><i class="fa-solid fa-clock"></i> Horário</th>
+              <th><i class="fa-solid fa-pills"></i> Medicamento</th>
+              <th><i class="fa-solid fa-weight-scale"></i> Dose</th>
+              <th><i class="fa-solid fa-circle-check"></i> Status</th>
+            </tr>
+          </thead>
+          <!-- Linhas preenchidas pelo JS -->
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer">
+    <p>Dispensador de Medicamentos Inteligente &mdash; Projeto Acadêmico IoT &bull; ESP32</p>
+  </footer>
+
+  <!-- ==================== MODAL DE CONFIRMAÇÃO ==================== -->
+  <!-- Aparece ao tentar excluir um medicamento -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3>Confirmar Exclusão</h3>
+      <p id="modalMessage">Deseja remover este medicamento?</p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" id="modalConfirmBtn">
+          <i class="fa-solid fa-trash"></i> Excluir
+        </button>
+        <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arquivo JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
