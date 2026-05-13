@@ -5,13 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dispensador de Medicamentos Inteligente</title>
 
-  <!-- Fonte principal do projeto -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-
-  <!-- Ícones (Font Awesome CDN) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- Arquivo de estilos -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -19,18 +14,15 @@
   <!-- ==================== HEADER ==================== -->
   <header class="header">
     <div class="header-inner">
-      <!-- Ícone + título -->
       <div class="header-brand">
         <div class="brand-icon">
           <i class="fa-solid fa-capsules"></i>
         </div>
         <div class="brand-text">
           <h1>Dispensador de Medicamentos</h1>
-          <p>Sistema Inteligente de Controle — ESP32 IoT</p>
+          
         </div>
       </div>
-
-      <!-- Indicador de conexão (atualizado pelo JS) -->
       <div class="header-status">
         <span class="pulse-dot" id="headerDot"></span>
         <span id="headerStatusText">Conectando...</span>
@@ -41,26 +33,38 @@
   <!-- ==================== CONTEÚDO PRINCIPAL ==================== -->
   <main class="main-content">
 
-    <!-- -------- LINHA 1: Cards de status do sistema -------- -->
+    <!-- Banner de configuração (some após configurar o Firebase) -->
+    
+
+    <!-- -------- Cards de status do sistema -------- -->
     <section class="section">
       <h2 class="section-title">
         <i class="fa-solid fa-microchip"></i> Status do Sistema
       </h2>
       <div class="status-grid">
 
-        <!-- Card: ESP32 -->
         <div class="status-card" id="cardEsp32">
           <div class="status-card-icon">
             <i class="fa-solid fa-wifi"></i>
           </div>
           <div class="status-card-info">
             <span class="status-label">Dispositivo ESP32</span>
-            <span class="status-value" id="esp32Status">Online</span>
+            <span class="status-value" id="esp32Status">Aguardando...</span>
           </div>
-          <div class="status-badge badge-online" id="esp32Badge">ONLINE</div>
+          <div class="status-badge badge-offline" id="esp32Badge">—</div>
         </div>
 
-        <!-- Card: Última liberação -->
+        <div class="status-card">
+          <div class="status-card-icon icon-firebase">
+            <i class="fa-solid fa-database"></i>
+          </div>
+          <div class="status-card-info">
+            <span class="status-label">Firebase</span>
+            <span class="status-value" id="firebaseStatus">Conectando...</span>
+          </div>
+          <div class="status-badge" id="firebaseBadge">—</div>
+        </div>
+
         <div class="status-card">
           <div class="status-card-icon icon-purple">
             <i class="fa-solid fa-clock-rotate-left"></i>
@@ -71,7 +75,6 @@
           </div>
         </div>
 
-        <!-- Card: Próximo horário -->
         <div class="status-card">
           <div class="status-card-icon icon-teal">
             <i class="fa-solid fa-bell"></i>
@@ -82,31 +85,19 @@
           </div>
         </div>
 
-        <!-- Card: Total cadastrado -->
-        <div class="status-card">
-          <div class="status-card-icon icon-amber">
-            <i class="fa-solid fa-pills"></i>
-          </div>
-          <div class="status-card-info">
-            <span class="status-label">Medicamentos</span>
-            <span class="status-value" id="totalMeds">0 cadastrados</span>
-          </div>
-        </div>
-
       </div>
     </section>
 
-    <!-- -------- LINHA 2: Formulário + Lista -------- -->
+    <!-- -------- Formulário + Lista -------- -->
     <div class="two-col-layout">
 
-      <!-- Formulário de cadastro -->
+      <!-- Formulário -->
       <section class="section card">
         <h2 class="section-title">
           <i class="fa-solid fa-plus-circle"></i>
           <span id="formTitle">Cadastrar Medicamento</span>
         </h2>
 
-        <!-- Campos do formulário -->
         <div class="form-group">
           <label for="medName">Nome do Medicamento</label>
           <div class="input-wrapper">
@@ -131,10 +122,8 @@
           </div>
         </div>
 
-        <!-- Mensagem de erro/feedback -->
         <div class="form-feedback" id="formFeedback"></div>
 
-        <!-- Botões do formulário -->
         <div class="form-actions">
           <button class="btn btn-primary" id="saveBtn" onclick="saveMedication()">
             <i class="fa-solid fa-floppy-disk"></i> Salvar
@@ -145,44 +134,43 @@
         </div>
       </section>
 
-      <!-- Lista de medicamentos cadastrados -->
+      <!-- Lista -->
       <section class="section card">
         <h2 class="section-title">
           <i class="fa-solid fa-list-check"></i> Medicamentos Cadastrados
+          <!-- Indicador de sync em tempo real -->
+          
         </h2>
 
-        <!-- Exibido quando não há medicamentos -->
         <div class="empty-state" id="emptyState">
           <i class="fa-solid fa-capsules"></i>
           <p>Nenhum medicamento cadastrado ainda.</p>
-          <span>Use o formulário ao lado para adicionar.</span>
+         
         </div>
 
-        <!-- Lista dinâmica (preenchida pelo JS) -->
         <ul class="med-list" id="medList"></ul>
       </section>
 
     </div>
 
-    <!-- -------- LINHA 3: Histórico -------- -->
+    <!-- -------- Histórico -------- -->
     <section class="section card">
       <div class="section-header-row">
         <h2 class="section-title">
           <i class="fa-solid fa-table-list"></i> Histórico de Dispensações
+          
         </h2>
-        <!-- Botão para limpar histórico -->
         <button class="btn btn-ghost btn-sm" onclick="clearHistory()">
           <i class="fa-solid fa-trash-can"></i> Limpar
         </button>
       </div>
 
-      <!-- Mensagem quando histórico estiver vazio -->
       <div class="empty-state" id="historyEmpty">
         <i class="fa-regular fa-clock"></i>
         <p>Nenhuma dispensação registrada.</p>
+        
       </div>
 
-      <!-- Tabela de histórico -->
       <div class="table-wrapper" id="historyWrapper" style="display:none;">
         <table class="history-table">
           <thead>
@@ -193,7 +181,6 @@
               <th><i class="fa-solid fa-circle-check"></i> Status</th>
             </tr>
           </thead>
-          <!-- Linhas preenchidas pelo JS -->
           <tbody id="historyBody"></tbody>
         </table>
       </div>
@@ -203,11 +190,10 @@
 
   <!-- ==================== FOOTER ==================== -->
   <footer class="footer">
-    <p>Dispensador de Medicamentos Inteligente &mdash; Projeto Acadêmico IoT &bull; ESP32</p>
+    <p>Dispensador de Medicamentos Inteligente &mdash; Projeto Acadêmico IoT</p>
   </footer>
 
-  <!-- ==================== MODAL DE CONFIRMAÇÃO ==================== -->
-  <!-- Aparece ao tentar excluir um medicamento -->
+  <!-- ==================== MODAL ==================== -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
@@ -222,7 +208,11 @@
     </div>
   </div>
 
-  <!-- Arquivo JavaScript -->
+  <!-- ==================== FIREBASE SDK (v9 compat) ==================== -->
+  <!-- Usando a versão "compat" para sintaxe mais simples (ideal para iniciantes) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
   <script src="script.js"></script>
 </body>
 </html>
