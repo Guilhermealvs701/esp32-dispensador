@@ -1,0 +1,343 @@
+#include <Arduino.h>
+#include <WiFi.h>
+#include <Firebase_ESP_Client.h>
+#include <ESP32Servo.h>
+#include <time.h>
+
+#include "addons/TokenHelper.h"
+#include "addons/RTDBHelper.h"
+
+
+/* ============================================================
+   PREENCHA COM OS SEUS DADOS
+   ============================================================ */
+
+#define WIFI_SSID      "Bel_infonet_Guilherme"
+#define WIFI_PASSWORD  "32252380"
+
+#define FIREBASE_HOST  "https://dispensador-medicamentos-3439f-default-rtdb.firebaseio.com/"
+#define FIREBASE_API   "AIzaSyAh-RowIR80XdGb7MJk35dt8KfIRpMP95E"
+
+// Brasilia = UTC-3
+#define FUSO_HORARIO   -10800
+
+
+/* ============================================================
+   PINOS
+   ============================================================ */
+#define PIN_SERVO        13
+#define PIN_LED_BUILTIN   2
+
+
+/* ============================================================
+   OBJETOS GLOBAIS
+   ============================================================ */
+FirebaseData   fbdo;
+FirebaseAuth   auth;
+FirebaseConfig fbConfig;
+
+Servo servoGaveta;
+
+bool          firebaseReady     = false;
+unsigned long ultimoHeartbeat   = 0;
+unsigned long ultimaVerificacao = 0;
+
+// VALOR CORRIGIDO: Guarda o último minuto que foi verificado para evitar duplo giro
+int ultimoMinutoVerificado = -1; 
+
+const String DB = "dispensador/";
+
+
+/* ============================================================
+   PROTÓTIPOS (declaração antecipada das funções)
+   ============================================================ */
+void conectarWiFi();
+void sincronizarNTP();
+void iniciarFirebase();
+void enviarHeartbeat();
+void verificarAlarmes();
+void dispensarMedicamento(String nome, String dose);
+void piscarLed(int vezes, int ms);
+
+
+/* ============================================================
+   SETUP
+   ============================================================ */
+void setup() {
+  Serial.begin(115200);
+  delay(500);
+  Serial.println("\n========================================");
+  Serial.println(" Dispensador de Medicamentos - ESP32");
+  Serial.println("========================================\n");
+
+  pinMode(PIN_LED_BUILTIN, OUTPUT);
+  digitalWrite(PIN_LED_BUILTIN, LOW);
+
+  servoGaveta.attach(PIN_SERVO);
+  servoGaveta.write(0);
+  Serial.println("[Servo] Inicializado na posicao 0");
+
+  conectarWiFi();
+  sincronizarNTP();
+    iniciarFirebase();
+
+  Serial.println("\n[Setup] Concluido! Monitorando alarmes...\n");
+}
+
+
+/* ============================================================
+   LOOP — Otimizado para evitar dupla execução
+   ============================================================ */
+void loop() {
+  unsigned long agora = millis();
+
+  // Heartbeat a cada 5 segundos
+  if (agora - ultimoHeartbeat >= 5000) {
+    ultimoHeartbeat = agora;
+    enviarHeartbeat();
+  }
+
+  // ✅ CORRIGIDO: Checa a cada 10 segundos, mas só valida se o minuto mudou
+  if (agora - ultimaVerificacao >= 10000) {
+    ultimaVerificacao = agora;
+    
+    time_t agoraTime = time(nullptr);
+    struct tm *ti = localtime(&agoraTime);
+    
+    // Garante que o NTP já sincronizou e que entramos em um minuto inédito
+    if (agoraTime > 1000000000UL && ti->tm_min != ultimoMinutoVerificado) {
+      ultimoMinutoVerificado = ti->tm_min; // Atualiza o minuto atual
+      verificarAlarmes();
+    }
+  }
+
+  // Reconecta WiFi se cair
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[WiFi] Conexao perdida. Reconectando...");
+    conectarWiFi();
+  }
+}
+
+
+/* ============================================================
+   WIFI — rede aberta (sem senha)
+   ============================================================ */
+void conectarWiFi() {
+  Serial.print("[WiFi] Conectando a: ");
+  Serial.println(WIFI_SSID);
+
+  WiFi.disconnect(true);
+  delay(200);
+
+  if (strlen(WIFI_PASSWORD) == 0) {
+    WiFi.begin(WIFI_SSID);
+  } else {
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  }
+
+  int tentativas = 0;
+  while (WiFi.status() != WL_CONNECTED && tentativas < 40) {
+    delay(500);
+    Serial.print(".");
+    tentativas++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\n[WiFi] Conectado!");
+    Serial.print("[WiFi] IP: ");
+    Serial.println(WiFi.localIP());
+    piscarLed(3, 100);
+  } else {
+    Serial.println("\n[WiFi] FALHA. Tente com hotspot do celular.");
+  }
+}
+
+
+/* ============================================================
+   NTP — sincroniza o relógio
+   ============================================================ */
+void sincronizarNTP() {
+  Serial.print("[NTP] Sincronizando horario");
+  configTime(FUSO_HORARIO, 0, "pool.ntp.org", "time.nist.gov");
+
+  time_t agora = 0;
+  int tentativas = 0;
+  while (agora < 1000000000UL && tentativas < 20) {
+    delay(500);
+    agora = time(nullptr);
+    Serial.print(".");
+    tentativas++;
+  }
+
+  if (agora > 1000000000UL) {
+    struct tm *ti = localtime(&agora);
+    char buf[30];
+    strftime(buf, sizeof(buf), "%d/%m/%Y %H:%M:%S", ti);
+    Serial.println("\n[NTP] Hora sincronizada: " + String(buf));
+  } else {
+    Serial.println("\n[NTP] FALHA na sincronizacao.");
+  }
+}
+
+
+/* ============================================================
+   FIREBASE — inicializa com database_url (API nova)
+   ============================================================ */
+void iniciarFirebase() {
+  fbConfig.api_key      = FIREBASE_API;
+  fbConfig.database_url = FIREBASE_HOST;
+
+  fbConfig.token_status_callback = tokenStatusCallback;
+
+  Serial.print("[Firebase] Registrando usuario anonimo");
+  if (Firebase.signUp(&fbConfig, &auth, "", "")) {
+    Serial.println(" OK");
+    firebaseReady = true;
+  } else {
+    Serial.println(" FALHA: " + String(fbConfig.signer.signupError.message.c_str()));
+  }
+
+  Firebase.begin(&fbConfig, &auth);
+  Firebase.reconnectWiFi(true);
+
+  Serial.print("[Firebase] Aguardando token");
+  unsigned long inicio = millis();
+  while (!Firebase.ready() && millis() - inicio < 15000) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  if (Firebase.ready()) {
+    firebaseReady = true;
+    Serial.println("\n[Firebase] Conectado com sucesso!");
+    Firebase.RTDB.setBool(&fbdo,   (DB + "sistema/esp32_online").c_str(), true);
+    Firebase.RTDB.setString(&fbdo, (DB + "sistema/versao").c_str(), "ESP32-Fisico-v1.0");
+  } else {
+    firebaseReady = false;
+    Serial.println("\n[Firebase] FALHA na conexao!");
+    Serial.println("[Firebase] Verifique: Authentication > Anonymous > Ativado");
+  }
+}
+
+
+/* ============================================================
+   HEARTBEAT
+   ============================================================ */
+void enviarHeartbeat() {
+  if (!firebaseReady) {
+    if (Firebase.ready()) firebaseReady = true;
+    return;
+  }
+
+  unsigned long ts = (unsigned long)time(nullptr) * 1000UL;
+  Firebase.RTDB.setBool(&fbdo, (DB + "sistema/esp32_online").c_str(), true);
+  Firebase.RTDB.setInt( &fbdo, (DB + "sistema/last_seen").c_str(), (int)ts);
+  Serial.println("[Heartbeat] OK");
+}
+
+
+/* ============================================================
+   VERIFICAR ALARMES
+   ============================================================ */
+void verificarAlarmes() {
+  if (!firebaseReady) {
+    Serial.println("[Alarmes] Firebase nao pronto, pulando.");
+    return;
+  }
+
+  time_t     agora = time(nullptr);
+  struct tm *ti   = localtime(&agora);
+
+  char horaAtual[6];
+  snprintf(horaAtual, sizeof(horaAtual), "%02d:%02d", ti->tm_hour, ti->tm_min);
+  Serial.println("[Alarmes] Verificando... Hora: " + String(horaAtual));
+
+  if (!Firebase.RTDB.getJSON(&fbdo, (DB + "medicamentos").c_str())) {
+    Serial.println("[Alarmes] Sem medicamentos no Firebase.");
+    return;
+  }
+
+  FirebaseJson &json = fbdo.jsonObject();
+  size_t count = json.iteratorBegin();
+
+  for (size_t i = 0; i < count; i++) {
+    String key, rawValue;
+    int    type;
+    json.iteratorGet(i, type, key, rawValue);
+
+    FirebaseJson medJson;
+    medJson.setJsonData(rawValue);
+
+    FirebaseJsonData fNome, fHora, fDose, fAtivo;
+    medJson.get(fNome,  "name");
+    medJson.get(fHora,  "time");
+    medJson.get(fDose,  "dose");
+    medJson.get(fAtivo, "active");
+
+    if (!fAtivo.boolValue) continue;
+
+    if (fHora.stringValue == String(horaAtual)) {
+      Serial.println("[Alarmes] *** HORA BATEU! ***");
+      dispensarMedicamento(fNome.stringValue, fDose.stringValue);
+    }
+  }
+
+  json.iteratorEnd();
+}
+
+
+/* ============================================================
+   DISPENSAR
+   ============================================================ */
+void dispensarMedicamento(String nome, String dose) {
+  Serial.println("\n>>> DISPENSANDO: " + nome + " | " + dose);
+
+  // Abre gaveta
+  Serial.println("[Servo] Abrindo (90)...");
+  servoGaveta.write(90);
+  delay(1500);
+
+  // Fecha gaveta
+  Serial.println("[Servo] Fechando (0)...");
+  servoGaveta.write(0);
+  delay(500);
+
+  piscarLed(5, 150);
+
+  // Monta timestamp e horário formatado
+  time_t     agora = time(nullptr);
+  struct tm *ti   = localtime(&agora);
+  char horario[17];
+  snprintf(horario, sizeof(horario), "%02d/%02d %02d:%02d",
+           ti->tm_mday, ti->tm_mon + 1, ti->tm_hour, ti->tm_min);
+
+  // Grava no histórico
+  FirebaseJson payload;
+  payload.set("medName",   nome.c_str());
+  payload.set("dose",      dose.c_str());
+  payload.set("time",      horario);
+  payload.set("timestamp", (int)((unsigned long)agora * 1000UL));
+  payload.set("status",    "entregue");
+
+  if (Firebase.RTDB.pushJSON(&fbdo, (DB + "historico").c_str(), &payload)) {
+    Serial.println("[Firebase] Historico gravado: " + fbdo.pushName());
+  } else {
+    Serial.println("[Firebase] Erro: " + fbdo.errorReason());
+  }
+
+  Firebase.RTDB.setString(&fbdo, (DB + "sistema/ultima_liberacao").c_str(), horario);
+  Serial.println(">>> Dispensacao concluida!\n");
+}
+
+
+/* ============================================================
+   LED
+   ============================================================ */
+void piscarLed(int vezes, int ms) {
+  for (int i = 0; i < vezes; i++) {
+    digitalWrite(PIN_LED_BUILTIN, HIGH);
+    delay(ms);
+    digitalWrite(PIN_LED_BUILTIN, LOW);
+    delay(ms);
+  }
+}

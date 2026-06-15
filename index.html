@@ -5,65 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dispensador de Medicamentos Inteligente</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ==================== HEADER ==================== -->
-  <header class="header">
-    <div class="header-inner">
-      <div class="header-brand">
-        <div class="brand-icon">
-          <i class="fa-solid fa-capsules"></i>
-        </div>
-        <div class="brand-text">
-          <h1>Dispensador de Medicamentos</h1>
-          
-        </div>
-      </div>
-      <div class="header-status">
-        <span class="pulse-dot" id="headerDot"></span>
-        <span id="headerStatusText">Conectando...</span>
-      </div>
+  <header class="page-title">
+    <div class="page-title-icon">
+      <i class="fa-solid fa-capsules"></i>
     </div>
+    <h1>Dispensador de Medicamentos</h1>
+   
   </header>
 
-  <!-- ==================== CONTEÚDO PRINCIPAL ==================== -->
   <main class="main-content">
 
-    <!-- Banner de configuração (some após configurar o Firebase) -->
-    
-
-    <!-- -------- Cards de status do sistema -------- -->
     <section class="section">
       <h2 class="section-title">
         <i class="fa-solid fa-microchip"></i> Status do Sistema
       </h2>
-      <div class="status-grid">
-
-        <div class="status-card" id="cardEsp32">
-          <div class="status-card-icon">
-            <i class="fa-solid fa-wifi"></i>
-          </div>
-          <div class="status-card-info">
-            <span class="status-label">Dispositivo ESP32</span>
-            <span class="status-value" id="esp32Status">Aguardando...</span>
-          </div>
-          <div class="status-badge badge-offline" id="esp32Badge">—</div>
-        </div>
-
-        <div class="status-card">
-          <div class="status-card-icon icon-firebase">
-            <i class="fa-solid fa-database"></i>
-          </div>
-          <div class="status-card-info">
-            <span class="status-label">Firebase</span>
-            <span class="status-value" id="firebaseStatus">Conectando...</span>
-          </div>
-          <div class="status-badge" id="firebaseBadge">—</div>
-        </div>
+      <div class="status-grid-2">
 
         <div class="status-card">
           <div class="status-card-icon icon-purple">
@@ -88,10 +50,8 @@
       </div>
     </section>
 
-    <!-- -------- Formulário + Lista -------- -->
     <div class="two-col-layout">
 
-      <!-- Formulário -->
       <section class="section card">
         <h2 class="section-title">
           <i class="fa-solid fa-plus-circle"></i>
@@ -122,6 +82,19 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label for="medSlot">Slot do Dispensador</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-box"></i>
+            <select id="medSlot" class="input-select">
+              <option value="1">Slot 1 — GPIO 13</option>
+              <option value="2">Slot 2 — GPIO 19</option>
+              <option value="3">Slot 3 — GPIO 21</option>
+              <option value="4">Slot 4 — GPIO 22</option>
+            </select>
+          </div>
+        </div>
+
         <div class="form-feedback" id="formFeedback"></div>
 
         <div class="form-actions">
@@ -134,12 +107,9 @@
         </div>
       </section>
 
-      <!-- Lista -->
       <section class="section card">
         <h2 class="section-title">
           <i class="fa-solid fa-list-check"></i> Medicamentos Cadastrados
-          <!-- Indicador de sync em tempo real -->
-          
         </h2>
 
         <div class="empty-state" id="emptyState">
@@ -153,12 +123,10 @@
 
     </div>
 
-    <!-- -------- Histórico -------- -->
     <section class="section card">
       <div class="section-header-row">
         <h2 class="section-title">
           <i class="fa-solid fa-table-list"></i> Histórico de Dispensações
-          
         </h2>
         <button class="btn btn-ghost btn-sm" onclick="clearHistory()">
           <i class="fa-solid fa-trash-can"></i> Limpar
@@ -168,7 +136,7 @@
       <div class="empty-state" id="historyEmpty">
         <i class="fa-regular fa-clock"></i>
         <p>Nenhuma dispensação registrada.</p>
-        
+     
       </div>
 
       <div class="table-wrapper" id="historyWrapper" style="display:none;">
@@ -177,6 +145,7 @@
             <tr>
               <th><i class="fa-solid fa-clock"></i> Horário</th>
               <th><i class="fa-solid fa-pills"></i> Medicamento</th>
+              <th><i class="fa-solid fa-box"></i> Slot</th>
               <th><i class="fa-solid fa-weight-scale"></i> Dose</th>
               <th><i class="fa-solid fa-circle-check"></i> Status</th>
             </tr>
@@ -188,12 +157,10 @@
 
   </main>
 
-  <!-- ==================== FOOTER ==================== -->
   <footer class="footer">
-    <p>Dispensador de Medicamentos Inteligente &mdash; Projeto Acadêmico IoT</p>
+    <p>Dispensador de Medicamentos Inteligente &mdash; Projeto Desenvolvido por Guilherme, Arthur, Hugo, Gustavo</p>
   </footer>
 
-  <!-- ==================== MODAL ==================== -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
       <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
@@ -208,11 +175,8 @@
     </div>
   </div>
 
-  <!-- ==================== FIREBASE SDK (v9 compat) ==================== -->
-  <!-- Usando a versão "compat" para sintaxe mais simples (ideal para iniciantes) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
   <script src="script.js"></script>
 </body>
 </html>

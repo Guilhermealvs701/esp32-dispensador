@@ -1,223 +1,169 @@
 /* ============================================================
-   style.css — Dispensador de Medicamentos Inteligente
-   Projeto Acadêmico IoT | Interface Dashboard
+   style.css — Dispensador de Medicamentos Inteligente Premium
+   Versão Otimizada: Foco em performance visual e responsividade
    ============================================================ */
 
-/* ---- 1. VARIÁVEIS GLOBAIS (cores, sombras, bordas) ---- */
+/* ---- 1. VARIÁVEIS ---- */
 :root {
-  --bg-page:      #f0f4f8;       /* fundo da página */
-  --bg-card:      #ffffff;       /* fundo dos cards */
-  --bg-input:     #f7f9fc;       /* fundo dos inputs */
+  --bg-page:           #f8fafc;
+  --bg-card:           #ffffff;
+  --bg-input:          #f1f5f9;
 
-  --color-primary: #2563eb;      /* azul principal */
+  --color-primary:      #2563eb;
   --color-primary-dark: #1d4ed8;
-  --color-primary-light: #dbeafe;
+  --color-primary-light:#eff6ff;
 
-  --color-teal:   #0d9488;       /* verde-azulado (ícone próximo horário) */
-  --color-purple: #7c3aed;       /* roxo (ícone última liberação) */
-  --color-amber:  #d97706;       /* âmbar (ícone total) */
-  --color-danger: #dc2626;       /* vermelho (excluir) */
-  --color-success:#16a34a;       /* verde (online/sucesso) */
-  --color-warning:#ca8a04;       /* amarelo (pendente) */
-  --color-offline:#6b7280;       /* cinza (offline) */
+  --color-teal:    #0d9488;
+  --color-purple:  #7c3aed;
+  --color-amber:   #d97706;
+  --color-danger:  #ef4444;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
 
-  --text-primary: #1e293b;       /* texto principal */
-  --text-secondary:#64748b;      /* texto secundário */
-  --text-muted:   #94a3b8;       /* texto fraco */
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
 
-  --border:       #e2e8f0;       /* cor da borda */
-  --radius-sm:    8px;
-  --radius-md:    12px;
-  --radius-lg:    16px;
-  --radius-xl:    20px;
+  --border:    #e2e8f0;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.05);
-  --shadow-md: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
-  --shadow-lg: 0 10px 30px rgba(0,0,0,.10);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 
-  --transition: all .2s ease;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ---- 2. RESET E BASE ---- */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* ---- 2. RESET ---- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'DM Sans', sans-serif;
-  background-color: var(--bg-page);
+  background-image: url('fundo.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ---- 3. HEADER ---- */
-.header {
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #0ea5e9 100%);
-  color: #fff;
-  padding: 15px 24px;
-  box-shadow: 0 2px 12px rgba(37,99,235,.35);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+/* ---- 3. TÍTULO CENTRALIZADO ---- */
+.page-title {
+  text-align: center;
+  padding: 40px 24px 32px;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm); /* Troca a borda por uma sombra sutil */
+  position: relative;
 }
 
-.header-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px 0;
-}
-
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-/* Ícone circular no header */
-.brand-icon {
-  width: 46px;
-  height: 46px;
-  background: rgba(255,255,255,.2);
-  border: 2px solid rgba(255,255,255,.35);
-  border-radius: 12px;
+.page-title-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--color-primary-light), #dbeafe);
+  color: var(--color-primary);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-  backdrop-filter: blur(4px);
+  font-size: 30px;
+  margin: 0 auto 16px;
+  box-shadow: var(--shadow-sm);
 }
 
-.brand-text h1 {
-  font-size: clamp(15px, 2.2vw, 20px);
+.page-title h1 {
+  font-size: clamp(45px, 4vw, 30px);
   font-weight: 700;
-  letter-spacing: -.3px;
+  color: var(--text-primary);
+  letter-spacing: -.03em;
 }
 
-.brand-text p {
-  font-size: 12px;
-  opacity: .75;
-  font-family: 'DM Mono', monospace;
-  margin-top: 2px;
-}
-
-/* Indicador de status no header */
-.header-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,.15);
-  border: 1px solid rgba(255,255,255,.25);
-  padding: 6px 14px;
-  border-radius: 50px;
+.page-title p {
   font-size: 13px;
-  font-weight: 500;
-  backdrop-filter: blur(4px);
-  flex-shrink: 0;
-}
-
-/* Ponto pulsante de status */
-.pulse-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #4ade80;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  font-family: 'DM Mono', monospace;
+  background: var(--bg-input);
   display: inline-block;
-  animation: pulse 1.8s infinite;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-weight: 500;
 }
 
-.pulse-dot.offline { background: #f87171; animation: none; }
-
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, .6); }
-  50%       { box-shadow: 0 0 0 5px rgba(74, 222, 128, 0); }
-}
-
-/* ---- 4. LAYOUT PRINCIPAL ---- */
+/* ---- 4. LAYOUT ---- */
 .main-content {
   flex: 1;
-  max-width: 1100px;
+  max-width: 1140px;
   width: 100%;
   margin: 0 auto;
-  padding: 28px 20px 40px;
+  padding: 32px 24px 48px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 32px;
 }
 
-/* Layout de duas colunas (formulário + lista) */
 .two-col-layout {
   display: grid;
-  grid-template-columns: 380px 1fr;
-  gap: 24px;
+  grid-template-columns: 400px 1fr;
+  gap: 32px;
   align-items: start;
 }
 
-/* ---- 5. SEÇÕES E TÍTULOS ---- */
-.section {}
-
-/* Título de cada seção */
+/* ---- 5. SEÇÕES E CARDS ---- */
 .section-title {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 25px;
+  font-weight: 700;
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 18px;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.section-title i {
-  color: var(--color-primary);
-  font-size: 14px;
-}
+.section-title i { color: var(--color-primary); font-size: 15px; }
 
-/* Linha com título + botão lado a lado */
 .section-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
+.section-header-row .section-title { margin-bottom: 0; }
 
-.section-header-row .section-title {
-  margin-bottom: 0;
-}
-
-/* Card genérico */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
+  border-radius: var(--radius-xl);
+  padding: 28px;
   box-shadow: var(--shadow-sm);
-  
 }
 
-/* ---- 6. GRID DE STATUS ---- */
-.status-grid {
+/* ---- 6. GRID DE STATUS (EXCLUSIVO 2 COLUNAS) ---- */
+.status-grid-2 {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .status-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 18px 20px;
+  padding: 22px 24px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
 }
@@ -227,94 +173,73 @@ body {
   transform: translateY(-2px);
 }
 
-/* Ícone de cada card de status */
 .status-card-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 22px;
   flex-shrink: 0;
 }
 
-/* Variantes de cor dos ícones */
-.icon-purple { background: #ede9fe; color: var(--color-purple); }
+.icon-purple { background: #f3e8ff; color: var(--color-purple); }
 .icon-teal   { background: #ccfbf1; color: var(--color-teal); }
-.icon-amber  { background: #fef3c7; color: var(--color-amber); }
 
 .status-card-info {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   min-width: 0;
   flex: 1;
 }
 
 .status-label {
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: .5px;
-  font-weight: 500;
+  letter-spacing: .05em;
+  font-weight: 600;
 }
 
 .status-value {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Badge ONLINE/OFFLINE */
-.status-badge {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 50px;
-  letter-spacing: .5px;
-  flex-shrink: 0;
-}
-
-.badge-online  { background: #dcfce7; color: #16a34a; }
-.badge-offline { background: #f1f5f9; color: var(--color-offline); }
-
 /* ---- 7. FORMULÁRIO ---- */
-.form-group {
-  margin-bottom: 16px;
-}
+.form-group { margin-bottom: 20px; }
 
 .form-group label {
   display: block;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
-/* Wrapper do input com ícone à esquerda */
-.input-wrapper {
-  position: relative;
-}
+.input-wrapper { position: relative; }
 
 .input-wrapper i {
   position: absolute;
-  left: 13px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
   font-size: 14px;
   pointer-events: none;
+  transition: var(--transition);
 }
 
-.input-wrapper input {
+.input-wrapper input,
+.input-select {
   width: 100%;
-  padding: 10px 14px 10px 38px;
+  padding: 12px 14px 12px 42px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--bg-input);
@@ -325,45 +250,52 @@ body {
   outline: none;
 }
 
-.input-wrapper input:focus {
+.input-select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.input-wrapper input:focus,
+.input-select:focus {
   border-color: var(--color-primary);
   background: #fff;
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
 }
 
-.input-wrapper input::placeholder { color: var(--text-muted); }
+.input-wrapper input:focus + i {
+  color: var(--color-primary);
+}
 
-/* Feedback de erro/sucesso no formulário */
 .form-feedback {
   font-size: 13px;
-  margin-bottom: 12px;
-  min-height: 20px;
-  padding: 0 2px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  min-height: 22px;
 }
-
 .form-feedback.error   { color: var(--color-danger); }
 .form-feedback.success { color: var(--color-success); }
 
-.form-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 4px;
-}
+.form-actions { display: flex; gap: 12px; margin-top: 4px; }
 
 /* ---- 8. BOTÕES ---- */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 10px 18px;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
   border: none;
   border-radius: var(--radius-sm);
   font-family: 'DM Sans', sans-serif;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
-  text-decoration: none;
   white-space: nowrap;
 }
 
@@ -371,12 +303,10 @@ body {
   background: var(--color-primary);
   color: #fff;
   flex: 1;
-  justify-content: center;
 }
-
 .btn-primary:hover {
   background: var(--color-primary-dark);
-  box-shadow: 0 4px 12px rgba(37,99,235,.3);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .btn-ghost {
@@ -384,29 +314,32 @@ body {
   color: var(--text-secondary);
   border: 1.5px solid var(--border);
 }
-
 .btn-ghost:hover {
   background: var(--bg-input);
   border-color: var(--text-secondary);
   color: var(--text-primary);
 }
 
-.btn-danger {
-  background: var(--color-danger);
-  color: #fff;
+.btn-danger { background: var(--color-danger); color: #fff; }
+.btn-danger:hover { background: #dc2626; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+
+.btn-sm { padding: 8px 14px; font-size: 13px; }
+
+
+.btn-icon.edit {
+  color: #eab308; /* Tom de amarelo visível e moderno */
+  background: rgba(234, 179, 8, 0.1); /* Fundo suave */
+  margin-bottom: 2px;
 }
 
-.btn-danger:hover { background: #b91c1c; }
-
-.btn-sm {
-  padding: 6px 12px;
-  font-size: 12.5px;
+.btn-icon.edit:hover {
+  background: #eab308;
+  color: #ffffff;
 }
 
-/* Botões de editar/excluir dentro dos itens da lista */
 .btn-icon {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
   background: transparent;
@@ -414,29 +347,35 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary);
   transition: var(--transition);
   flex-shrink: 0;
 }
-
 .btn-icon:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-light); }
-.btn-icon.delete:hover { border-color: var(--color-danger); color: var(--color-danger); background: #fee2e2; }
+.btn-icon.delete {
+  color: #ef4444; /* Vermelho vibrante */
+  background: rgba(239, 68, 68, 0.1); /* Fundo suave */
+}
+
+.btn-icon.delete:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
 
 /* ---- 9. LISTA DE MEDICAMENTOS ---- */
 .med-list {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-/* Item individual da lista */
 .med-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: 14px;
+  padding: 14px 16px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   background: #fafbfc;
@@ -445,19 +384,16 @@ body {
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-.med-item:hover { border-color: var(--color-primary); background: #f8fbff; }
+.med-item:hover { border-color: var(--color-primary); background: #f8fbff; transform: translateX(2px); }
 
-/* Círculo colorido com inicial do medicamento */
 .med-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
   font-weight: 700;
   font-size: 15px;
   display: flex;
@@ -466,10 +402,15 @@ body {
   flex-shrink: 0;
 }
 
+.med-avatar.slot-1 { background: #dbeafe; color: #2563eb; }
+.med-avatar.slot-2 { background: #ede9fe; color: #7c3aed; }
+.med-avatar.slot-3 { background: #ccfbf1; color: #0d9488; }
+.med-avatar.slot-4 { background: #fef3c7; color: #d97706; }
+
 .med-info { flex: 1; min-width: 0; }
 
 .med-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
@@ -479,61 +420,35 @@ body {
 
 .med-meta {
   display: flex;
-  gap: 12px;
-  margin-top: 3px;
+  gap: 14px;
+  margin-top: 4px;
+  flex-wrap: wrap;
 }
 
 .med-meta span {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
-.med-meta i { font-size: 11px; color: var(--text-muted); }
-
-/* Badge "Ativo" */
-.badge-active {
-  font-size: 10.5px;
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 50px;
-  background: #dcfce7;
-  color: #16a34a;
-  flex-shrink: 0;
-}
-
-.med-actions {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
+.med-meta i { font-size: 12px; color: var(--text-muted); }
 
 /* ---- 10. ESTADO VAZIO ---- */
 .empty-state {
   text-align: center;
-  padding: 36px 20px;
+  padding: 40px 24px;
   color: var(--text-muted);
 }
-
 .empty-state i {
-  font-size: 36px;
-  opacity: .35;
+  font-size: 40px;
+  opacity: .4;
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
-
-.empty-state p {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.empty-state span {
-  font-size: 12.5px;
-  color: var(--text-muted);
-}
+.empty-state p { font-size: 14.5px; font-weight: 600; color: var(--text-secondary); }
+.empty-state span { font-size: 13px; color: var(--text-muted); margin-top: 2px; display: inline-block; }
 
 /* ---- 11. TABELA DE HISTÓRICO ---- */
 .table-wrapper {
@@ -545,79 +460,67 @@ body {
 .history-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13.5px;
+  font-size: 14px;
 }
 
-.history-table thead {
-  background: var(--bg-input);
-}
+.history-table thead { background: var(--bg-input); }
 
 .history-table th {
-  padding: 12px 16px;
+  padding: 14px 18px;
   text-align: left;
   font-weight: 600;
   font-size: 12px;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: .4px;
+  letter-spacing: .05em;
   white-space: nowrap;
 }
 
-.history-table th i { margin-right: 5px; color: var(--text-muted); }
+.history-table th i { margin-right: 6px; color: var(--text-muted); }
 
 .history-table td {
-  padding: 12px 16px;
+  padding: 14px 18px;
   border-top: 1px solid var(--border);
   color: var(--text-primary);
   vertical-align: middle;
 }
 
-/* Zebra striping suave */
 .history-table tbody tr:nth-child(even) { background: #fafbfc; }
 .history-table tbody tr:hover { background: #f1f5f9; }
 
-/* Badges de status no histórico */
-.badge-entregue {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11.5px;
+.badge-active {
+  font-size: 11px;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 3px 9px;
   border-radius: 50px;
   background: #dcfce7;
   color: #16a34a;
+  flex-shrink: 0;
 }
 
-.badge-pendente {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 50px;
-  background: #fef9c3;
-  color: var(--color-warning);
+.badge-entregue, .badge-pendente, .badge-falha {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600;
+  padding: 4px 12px; border-radius: 50px;
 }
+.badge-entregue { background: #dcfce7; color: #15803d; }
+.badge-pendente { background: #fef9c3; color: #a16207; }
+.badge-falha    { background: #fee2e2; color: #b91c1c; }
 
-.badge-falha {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 50px;
-  background: #fee2e2;
-  color: var(--color-danger);
+.slot-badge {
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 50px;
 }
+.slot-1 { background: #dbeafe; color: #2563eb; }
+.slot-2 { background: #ede9fe; color: #7c3aed; }
+.slot-3 { background: #ccfbf1; color: #0d9488; }
+.slot-4 { background: #fef3c7; color: #d97706; }
 
 /* ---- 12. MODAL ---- */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, .45);
+  background: rgba(15, 23, 42, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -625,169 +528,68 @@ body {
   opacity: 0;
   visibility: hidden;
   transition: var(--transition);
-  padding: 20px;
-  backdrop-filter: blur(3px);
+  padding: 24px;
+  backdrop-filter: blur(4px);
 }
-
-/* Classe adicionada pelo JS para exibir o modal */
-.modal-overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
+.modal-overlay.active { opacity: 1; visibility: visible; }
 
 .modal {
   background: #fff;
   border-radius: var(--radius-xl);
-  padding: 32px 28px;
+  padding: 36px 32px;
   width: 100%;
-  max-width: 360px;
+  max-width: 380px;
   text-align: center;
   box-shadow: var(--shadow-lg);
   transform: scale(.95);
-  transition: transform .2s ease;
+  transition: var(--transition);
 }
-
 .modal-overlay.active .modal { transform: scale(1); }
 
 .modal-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
-  background: #fee2e2;
-  color: var(--color-danger);
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 16px;
-}
-
-.modal h3 {
-  font-size: 17px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.modal p {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 24px;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.modal-actions .btn { flex: 1; justify-content: center; }
-
-/* ---- 12b. FIREBASE / EXTRAS ---- */
-
-/* Ícone Firebase nos cards de status */
-.icon-firebase { background: #fff3e0; color: #f57c00; }
-
-/* Badge "Tempo Real" ao lado dos títulos de seção */
-.realtime-badge {
-  margin-left: auto;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-success);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: #dcfce7;
-  padding: 3px 9px;
-  border-radius: 50px;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-/* Ponto pulsante verde dentro do badge */
-.realtime-badge i {
-  font-size: 7px;
-  color: var(--color-success);
-  animation: pulse 1.8s infinite;
-}
-
-/* Banner de aviso de configuração do Firebase */
-.config-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  background: #fffbeb;
-  border: 1.5px solid #fcd34d;
+  width: 60px; height: 60px;
   border-radius: var(--radius-md);
-  padding: 14px 16px;
-  font-size: 13.5px;
-  color: #92400e;
+  background: #fee2e2; color: var(--color-danger);
+  font-size: 26px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 18px;
 }
-
-.config-banner i:first-child { color: #d97706; margin-top: 2px; flex-shrink: 0; }
-.config-banner strong { display: block; margin-bottom: 3px; }
-.config-banner code {
-  background: #fef3c7;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
-}
-.config-banner a {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 500;
-  margin-left: 6px;
-}
-.config-banner a:hover { text-decoration: underline; }
-.config-banner button {
-  margin-left: auto;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #92400e;
-  font-size: 16px;
-  flex-shrink: 0;
-  opacity: .6;
-  padding: 0 4px;
-}
-.config-banner button:hover { opacity: 1; }
+.modal h3 { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.modal p  { font-size: 14.5px; color: var(--text-secondary); margin-bottom: 28px; }
+.modal-actions { display: flex; gap: 12px; justify-content: center; }
+.modal-actions .btn { flex: 1; }
 
 /* ---- 13. FOOTER ---- */
 .footer {
   text-align: center;
-  padding: 18px 20px;
-  font-size: 12px;
-  color: var(--text-muted);
+  padding: 24px 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
   border-top: 1px solid var(--border);
   background: var(--bg-card);
 }
 
-/* ---- 14. RESPONSIVIDADE MOBILE ---- */
-@media (max-width: 900px) {
-  /* Status em 2 colunas */
-  .status-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* ---- 14. RESPONSIVO ---- */
+@media (max-width: 850px) {
+  .two-col-layout { grid-template-columns: 1fr; gap: 24px; }
 }
 
-@media (max-width: 700px) {
-  /* Layout de coluna única */
-  .two-col-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .header-inner { gap: 10px; }
-  .brand-text h1 { font-size: 14px; }
-  .brand-text p  { display: none; }
-
-  .main-content { padding: 20px 14px 32px; gap: 20px; }
+@media (max-width: 600px) {
+  .status-grid-2  { grid-template-columns: 1fr; }
+  .main-content   { padding: 20px 16px 36px; gap: 24px; }
+  .page-title     { padding: 36px 20px 24px; }
 }
 
-@media (max-width: 480px) {
-  /* Status em 1 coluna no celular pequeno */
-  .status-grid { grid-template-columns: 1fr; }
 
-  .card { padding: 18px 16px; }
 
-  .header-status span:last-child { display: none; } /* esconde texto, só o ponto */
+
+
+
+/* Deixa o topo transparente para mostrar o fundo */
+.page-title, header {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important; /* Remove sombras que possam marcar o topo */
 }
+
+/* Deixa a base transparente para mostrar o fundo */
