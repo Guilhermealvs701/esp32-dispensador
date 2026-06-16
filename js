@@ -1,3 +1,7 @@
+/* ============================================================
+   script.js — Dispensador de Medicamentos Inteligente
+   Versão Limpa (Apenas Funcionalidades Ativas)
+   ============================================================ */
 
 /* -------------------------------------------------------
    1. CONFIGURAÇÃO DO FIREBASE
@@ -263,8 +267,12 @@ function clearHistory() {
 /* -------------------------------------------------------
    10. CÁLCULO DO PRÓXIMO HORÁRIO
    ------------------------------------------------------- */
-
-
+/* -------------------------------------------------------
+   10. CÁLCULO DO PRÓXIMO HORÁRIO (Lógica Corrigida)
+   ------------------------------------------------------- */
+/* -------------------------------------------------------
+   10. CÁLCULO DO PRÓXIMO HORÁRIO (Lógica Simplificada)
+   ------------------------------------------------------- */
 function updateNextSchedule() {
   const keys = Object.keys(medicationsCache);
   const elNext = document.getElementById('nextSchedule');
